@@ -31,6 +31,7 @@ class ImageLoader private constructor(context: Context) {
         return this
     }
 
+
     fun addListener(imageListener: ImageListener?): ImageLoader {
         if (imageListener != null) {
             this.imageListener = imageListener
@@ -85,9 +86,9 @@ class ImageLoader private constructor(context: Context) {
             conn.connectTimeout = 30000
             conn.readTimeout = 30000
             conn.instanceFollowRedirects = true
-            val `is` = conn.inputStream
+            val inputStream = conn.inputStream
             val os: OutputStream = FileOutputStream(f)
-            Util.copyStream(`is`, os)
+            Util.copyStream(inputStream, os)
             os.close()
             bitmap = decodeFile(f)
             if (bitmap == null) showResult(false, "Unable to load URL") else showResult(

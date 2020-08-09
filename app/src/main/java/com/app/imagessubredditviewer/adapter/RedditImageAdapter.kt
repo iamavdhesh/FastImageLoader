@@ -7,6 +7,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.app.imageloader.ImageLoader
 import com.app.imagessubredditviewer.R
+import com.app.imagessubredditviewer.models.RedditResponseModel
 import kotlinx.android.synthetic.main.row_image.view.*
 
 /**
@@ -23,12 +24,20 @@ class RedditImageAdapter : RecyclerView.Adapter<RedditImageAdapter.MyImageHolder
     }
 
     override fun getItemCount(): Int {
-        return 0;
+        return childrenList?.size?:0;
     }
 
     override fun onBindViewHolder(holder: MyImageHolder, position: Int) {
 
-        ImageLoader.get(holder.ivImage.context)?.loadUrl("")?.target(holder.ivImage)?.execute()
+        ImageLoader.get(holder.ivImage.context)?.loadUrl(childrenList?.get(position)?.data?.thumbnail)?.target(holder.ivImage)?.execute()
+    }
+
+  var  childrenList: MutableList<RedditResponseModel.Data.Children>?= arrayListOf()
+    fun setRecords(children: List<RedditResponseModel.Data.Children>?) {
+        if (children != null) {
+            this.childrenList?.addAll(children)
+            notifyDataSetChanged()
+        }
 
     }
 
