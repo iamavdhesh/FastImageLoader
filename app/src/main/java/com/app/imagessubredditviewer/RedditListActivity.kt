@@ -1,11 +1,13 @@
 package com.app.imagessubredditviewer
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.imagessubredditviewer.adapter.RedditImageAdapter
+import com.app.imagessubredditviewer.models.RedditResponseModel
 import com.app.imagessubredditviewer.network.RetrofitFactory
 import com.app.imagessubredditviewer.utils.NetworkUtils
 import com.karumi.dexter.Dexter
@@ -28,10 +30,12 @@ class RedditListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         activity = this
         setAdapter()
+
         Dexter.withActivity(activity)
             .withPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
             .withListener(object : PermissionListener {
                 override fun onPermissionGranted(response: PermissionGrantedResponse?) {
+
                     getListRecords()
                 }
 
@@ -39,7 +43,12 @@ class RedditListActivity : AppCompatActivity() {
                     permission: PermissionRequest?,
                     token: PermissionToken?
                 ) {
-
+                    token?.continuePermissionRequest()
+                    Toast.makeText(
+                        activity,
+                        "Please provide storage permission",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
                 }
 
@@ -110,6 +119,20 @@ class RedditListActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
             redditImageAdapter = RedditImageAdapter()
             adapter = redditImageAdapter
+            redditImageAdapter?.onItemClickListener=
+                object : RedditImageAdapter.OnItemClickListener {
+                    override fun onItemClicked(
+                        position: Int,
+                        childItem: RedditResponseModel.Data.Children?
+                    ) {
+                        if (childItem != null) {
+                            val intent = Intent(activity, ImageDetailsActivity::class.java)
+                            intent.putExtra("IMAGE_URL", childItem.data.thumbnail)
+                            intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+                            startActivity(intent)
+                        }
+                    }
+                }
 
         }
 
