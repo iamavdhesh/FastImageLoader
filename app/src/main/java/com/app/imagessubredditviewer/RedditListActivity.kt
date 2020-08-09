@@ -17,10 +17,7 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import retrofit2.HttpException
 
 class RedditListActivity : AppCompatActivity() {
@@ -66,13 +63,17 @@ class RedditListActivity : AppCompatActivity() {
 
     }
 
+    val coroutineExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+        // handle thrown exceptions from coroutine scope
+        throwable.printStackTrace()
+    }
     private fun getListRecords() {
 
         if (NetworkUtils.isNetworkConnected(this)) {
             progressHorizontal.visibility = View.VISIBLE
             val service = RetrofitFactory.makeRetrofitService()
             try {
-                CoroutineScope(Dispatchers.IO).launch {
+                CoroutineScope(Dispatchers.IO).safeLaunch {
                     val response = service.getListing()
                     withContext(Dispatchers.Main) {
                         progressHorizontal.visibility = View.GONE
@@ -96,6 +97,7 @@ class RedditListActivity : AppCompatActivity() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
+
                     }
                 }
             } catch (e: Exception) {
@@ -136,5 +138,13 @@ class RedditListActivity : AppCompatActivity() {
 
         }
 
+    }
+    private fun CoroutineScope.safeLaunch(
+        exceptionHandler: CoroutineExceptionHandler = coroutineExceptionHandler,
+        launchBody: suspend () -> Unit
+    ): Job {
+        return this.launch(exceptionHandler) {
+            launchBody.invoke()
+        }
     }
 }
