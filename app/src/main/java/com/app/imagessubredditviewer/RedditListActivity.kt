@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.imagessubredditviewer.adapter.RedditImageAdapter
 import com.app.imagessubredditviewer.network.RetrofitFactory
-import com.app.imagessubredditviewer.utik.NetworkUtils
+import com.app.imagessubredditviewer.utils.NetworkUtils
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse

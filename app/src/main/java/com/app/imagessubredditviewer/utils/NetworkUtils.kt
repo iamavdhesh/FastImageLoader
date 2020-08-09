@@ -1,4 +1,4 @@
-package com.app.imagessubredditviewer.utik
+package com.app.imagessubredditviewer.utils
 
 import android.content.Context
 import android.net.ConnectivityManager
